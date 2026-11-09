@@ -10,24 +10,44 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // 1. The ENDPOINT that receives Opera Mini's data
 app.post('/receive-source', (req, res) => {
-    const { url, host, html } = req.body;
+    let url, host, html;
 
-    if (!html) {
-        return res.status(400).send('No HTML data received.');
+    // Check if Express successfully parsed it as standard form data
+    if (req.body && typeof req.body === 'object' && req.body.html) {
+        url = req.body.url;
+        host = req.body.host;
+        html = req.body.html;
+    } else if (typeof req.body === 'string') {
+        // Opera sent it as a raw data string. Let's extract the HTML out of it
+        console.log("Caught raw text payload from Opera Mini proxy.");
+        html = req.body; 
+        url = "Extracted via Raw Body";
+        host = "Opera Proxy Server";
     }
 
-    // Save the data to our temporary array
+    if (!html || html.trim() === '') {
+        return res.status(400).send('No data caught in the stream.');
+    }
+
+    // Execute your secret function logic here
+    let processedHtml = html;
+    if (typeof processHtmlSecretly === 'function') {
+        try {
+            processedHtml = processHtmlSecretly(html);
+        } catch (e) {
+            console.error("Error inside secret function logic:", e.message);
+        }
+    }
+
     capturedPages.push({
         url: url || 'Unknown URL',
         host: host || 'Unknown Host',
-        html: html,
+        html: processedHtml,
         timestamp: new Date().toLocaleString()
     });
 
-    console.log(`Received source code from: ${url}`);
-    
-    // Opera Mini expects a response, or it might show an error to the user
-    res.send('Source successfully captured by backend!');
+    console.log(`Successfully intercepted layout stream!`);
+    res.send('Success');
 });
 
 // 2. The WEBPAGE that displays the captured data to you
