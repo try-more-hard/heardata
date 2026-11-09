@@ -10,7 +10,16 @@ app.use(express.text({ type: '*/*', limit: '50mb' }));
 
 // Keep your existing urlencoded middleware below it
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-
+app.all('/receive-source', (req, res, next) => {
+    // Force a 200 OK headers response to stop Opera's server from dropping the connection
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    
+    if (req.method === 'POST') {
+        return next(); // Pass down to your POST handling logic
+    }
+    res.send('Gateway Active');
+});
 
 // 1. The ENDPOINT that receives Opera Mini's data
 app.post('/receive-source', (req, res) => {
