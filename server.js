@@ -5,8 +5,12 @@ const PORT = process.env.PORT || 3000;
 // Temporary memory store for the captured source code
 let capturedPages = [];
 
-// Middleware to parse URL-encoded form data sent by Opera Mini
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+// Add express.text to catch unformatted or raw text payloads from Opera
+app.use(express.text({ type: '*/*', limit: '50mb' }));
+
+// Keep your existing urlencoded middleware below it
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
 
 // 1. The ENDPOINT that receives Opera Mini's data
 app.post('/receive-source', (req, res) => {
