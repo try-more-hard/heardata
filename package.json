@@ -1,0 +1,15 @@
+{
+  "name": "heardata",
+  "version": "1.0.0",
+  "description": "A backend to receive and display DOM source code exported from Opera Mini",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
